@@ -36,30 +36,36 @@ const setCount = ({ count } = {}) => ({
   count
 });
 
-const store = createStore(
-  (state = { count: 0 }, action /* used for .dispatch */) => {
-    switch (action.type) {
-      case "INCREMENT_COUNT":
-        return {
-          count: state.count + action.incrementBy
-        };
-      case "DECREMENT_COUNT":
-        return {
-          count: state.count - action.decrementBy
-        };
-      case "SET_COUNT":
-        return {
-          count: action.count
-        };
-      case "RESET_COUNT":
-        return {
-          count: 0
-        };
-      default:
-        return state;
-    }
+// Reducers
+// 1. Reducers are pure functions - we only want to effect things inside of the function scope
+// 2. Never change state of action
+
+const countReducer = (
+  state = { count: 0 },
+  action /* used for .dispatch */
+) => {
+  switch (action.type) {
+    case "INCREMENT_COUNT":
+      return {
+        count: state.count + action.incrementBy
+      };
+    case "DECREMENT_COUNT":
+      return {
+        count: state.count - action.decrementBy
+      };
+    case "SET_COUNT":
+      return {
+        count: action.count
+      };
+    case "RESET_COUNT":
+      return {
+        count: 0
+      };
+    default:
+      return state;
   }
-);
+};
+const store = createStore(countReducer);
 
 // kind of like render(), whatever is inside gets called whenever the state changes
 const unsubscribe = store.subscribe(() => {
