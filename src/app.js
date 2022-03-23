@@ -16,13 +16,12 @@ store.dispatch(
 );
 
 store.dispatch(
-  addExpense({ description: "Gas Bill", amount: 9999999, createdAt: 9000000 })
+  addExpense({ description: "Gas Bill", amount: 9999999, createdAt: 25000 })
 );
 
-store.dispatch(setTextFilter("bill"));
-//store.dispatch(setTextFilter("water"));
-
-console.log(store.getState());
+store.dispatch(
+  addExpense({ description: "Rent", amount: 50000, createdAt: 10000 })
+);
 
 store.subscribe(() => {
   const state = store.getState();
