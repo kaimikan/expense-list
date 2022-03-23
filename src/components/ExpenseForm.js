@@ -13,43 +13,71 @@ export default class ExpenseForm extends React.Component {
     note: "",
     amount: "",
     createdAt: moment(),
-    calendarFocused: false
+    calendarFocused: false,
+    error: ""
   };
 
   onDescriptionChange = (e) => {
     const description = e.target.value;
-    this.setState(() => {
-      description;
-    });
+    this.setState(() => ({
+      description
+    }));
   };
 
   onNoteChange = (e) => {
     const note = e.target.value;
-    this.setState(() => {
-      note;
-    });
+    this.setState(() => ({
+      note
+    }));
   };
 
   onAmountChange = (e) => {
     const amount = e.target.value;
     // you can check the match() regex on regex101.com
-    if (amount.match(/^\d*(\.\d{0,2})?$/)) {
+    if (!amount || amount.match(/^\d{1,}(\.\d{0,2})?$/)) {
       this.setState(() => ({ amount }));
     }
   };
 
   onDateChange = (createdAt) => {
-    this.setState(() => ({ createdAt }));
+    if (createdAt) this.setState(() => ({ createdAt }));
   };
 
   onFocusChange = ({ focused }) => {
     this.setState(() => ({ calendarFocused: focused }));
   };
 
+  // if i used the name onSubmit it wasn't going through (it seems to be a reserved name)
+  submitForm = (e) => {
+    // prevent page refresh
+    e.preventDefault();
+
+    if (!this.state.description || !this.state.amount) {
+      this.setState(() => ({
+        error: "Please provide description and amount"
+      }));
+    } else {
+      this.setState(() => ({
+        error: ""
+      }));
+      this.props.submitFormAddEntry({
+        description: this.state.description,
+        amount: parseFloat(this.state.amount, 10) * 100,
+        createdAt: this.state.createdAt.valueOf(),
+        note: this.state.note
+      });
+    }
+  };
+
   render() {
     return (
       <div>
-        <form>
+        {this.state.error && (
+          <p>
+            <b>Error: </b> {this.state.error}
+          </p>
+        )}
+        <form onSubmit={this.submitForm}>
           <input
             type="text"
             placeholder="Description"
