@@ -8,14 +8,19 @@ const now = moment();
 console.log(now.format("Do MMM, YYYY"));
 
 export default class ExpenseForm extends React.Component {
-  state = {
-    description: "",
-    note: "",
-    amount: "",
-    createdAt: moment(),
-    calendarFocused: false,
-    error: ""
-  };
+  constructor(props) {
+    super(props);
+
+    // we use the constructor to be able to handle default info for both edit and add expense functionalities
+    this.state = {
+      description: props.expense ? props.expense.description : "",
+      note: props.expense ? props.expense.note : "",
+      amount: props.expense ? (props.expense.amount / 100).toString() : "",
+      createdAt: props.expense ? moment(props.expense.createdAt) : moment(),
+      calendarFocused: false,
+      error: ""
+    };
+  }
 
   onDescriptionChange = (e) => {
     const description = e.target.value;
@@ -48,7 +53,8 @@ export default class ExpenseForm extends React.Component {
   };
 
   // if i used the name onSubmit it wasn't going through (it seems to be a reserved name)
-  submitForm = (e) => {
+  // nevermind it works now but not sure why
+  onSubmit = (e) => {
     // prevent page refresh
     e.preventDefault();
 
@@ -60,7 +66,7 @@ export default class ExpenseForm extends React.Component {
       this.setState(() => ({
         error: ""
       }));
-      this.props.submitFormAddEntry({
+      this.props.onSubmit({
         description: this.state.description,
         amount: parseFloat(this.state.amount, 10) * 100,
         createdAt: this.state.createdAt.valueOf(),
@@ -77,12 +83,12 @@ export default class ExpenseForm extends React.Component {
             <b>Error: </b> {this.state.error}
           </p>
         )}
-        <form onSubmit={this.submitForm}>
+        <form onSubmit={this.onSubmit}>
           <input
             type="text"
             placeholder="Description"
             autoFocus
-            value={this.setState.description}
+            value={this.state.description}
             onChange={this.onDescriptionChange}
           />
           <input
