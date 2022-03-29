@@ -9,19 +9,32 @@ import {
   setEndDate
 } from "../actions/filters";
 
-class ExpenseListFilters extends React.Component {
+export class ExpenseListFilters extends React.Component {
   state = {
     /* null instead of false since we're using DatePicker */
     calendarFocused: null
   };
 
   onDatesChange = ({ startDate, endDate }) => {
-    this.props.dispatch(setStartDate(startDate));
-    this.props.dispatch(setEndDate(endDate));
+    this.props.setStartDate(startDate);
+    this.props.setEndDate(endDate);
   };
 
   onFocusChange = (calendarFocus) => {
     this.setState(() => ({ calendarFocused: calendarFocus }));
+  };
+
+  onTextChange = (e) => {
+    // same as store.dispatch(...)
+    this.props.setTextFilter(e.target.value);
+    console.log(e.target.value);
+  };
+
+  onSortChange = (e) => {
+    // doing this if since there is only 2 values to sort by
+    e.target.value === "date"
+      ? this.props.sortByDate()
+      : this.props.sortByAmount();
   };
 
   render() {
@@ -30,21 +43,12 @@ class ExpenseListFilters extends React.Component {
         <input
           type="text"
           value={this.props.filters.text}
-          onChange={(e) => {
-            // same as store.dispatch(...)
-            this.props.dispatch(setTextFilter(e.target.value));
-            console.log(e.target.value);
-          }}
+          onChange={this.onTextChange}
         />
         <select
           /* controlled input means an input controlled from javascript (value is an example here) */
           value={this.props.filters.sortBy}
-          onChange={(e) => {
-            // doing this if since there is only 2 values to sort by
-            e.target.value === "date"
-              ? this.props.dispatch(sortByDate())
-              : this.props.dispatch(sortByAmount());
-          }}
+          onChange={this.onSortChange}
         >
           <option value="date">Date</option>
           <option value="amount">Amount</option>
@@ -67,11 +71,17 @@ class ExpenseListFilters extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    filters: state.filters
-  };
-};
+const mapStateToProps = (state) => ({
+  filters: state.filters
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setTextFilter: (text) => dispatch(setTextFilter(text)),
+  sortByDate: () => dispatch(sortByDate()),
+  sortByAmount: () => dispatch(sortByAmount()),
+  setStartDate: (startDate) => dispatch(setStartDate(startDate)),
+  setEndDate: (endDate) => dispatch(setEndDate(endDate))
+});
 
 // connect helps redux use the state from react as props basically
-export default connect(mapStateToProps)(ExpenseListFilters);
+export default connect(mapStateToProps, mapDispatchToProps)(ExpenseListFilters);
