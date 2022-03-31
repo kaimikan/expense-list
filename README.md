@@ -2,6 +2,8 @@
 
 An app with the purpose of tracking expenses. Following Andrew Mead's React course.
 
+Check out the app [here](https://expenses-list-heroku.herokuapp.com/).
+
 ## Setup:
 
 to create node_modules if first time cloning
