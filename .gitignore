@@ -26,6 +26,8 @@ chrome-user-data
 .prettierrc.json
 public/bundle.js
 public/bundle.js.map
+public/styles.css
+public/styles.css.map
 
 packages/react-devtools-core/dist
 packages/react-devtools-extensions/chrome/build
