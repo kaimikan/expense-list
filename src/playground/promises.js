@@ -21,6 +21,10 @@ promise.then((data) => {
 promise
   .then((data) => {
     console.log("2", data);
+    return "blah blah";
+  })
+  .then((str) => {
+    console.log("this also runs with the 2 promise resolve", str);
   })
   .catch((error) => {
     console.log("error: ", error);

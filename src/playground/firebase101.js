@@ -28,13 +28,11 @@ initializeApp(firebaseConfig);
 
 const db = getDatabase();
 
-export { db as default };
-
 // putting into methods for easier commenting
 //setupBasicData(db);
 //removingAndUpdatingExamples(db);
 //onValueUnsubscribing(db);
-// firebaseArrayStoringExample(db);
+firebaseArrayStoringExample(db);
 
 function setupBasicData(db) {
   set(ref(db), {

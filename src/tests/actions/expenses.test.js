@@ -1,4 +1,16 @@
-import { addExpense, editExpense, removeExpense } from "../../actions/expenses";
+import { ref, child, get } from "firebase/database";
+import configureMockStore from "redux-mock-store";
+import thunk from "redux-thunk";
+import {
+  startAddExpense,
+  addExpense,
+  editExpense,
+  removeExpense
+} from "../../actions/expenses";
+import expenses from "../fixtures/expenses";
+import db from "../../firebase/firebase";
+
+const createMockStore = configureMockStore([thunk]);
 
 test("should setup remove expense action object", () => {
   const action = removeExpense({ expenseIDToRemove: "123abc" });
@@ -19,38 +31,108 @@ test("should setup edit expense action object", () => {
   });
 });
 
+// changed the 2 tests below after asynchronous chages to expense actions
 test("should setup add expense action object with provided values", () => {
-  const expenseData = {
-    description: "Rent",
-    amount: 109500,
-    createdAt: 100,
-    note: "last rent"
-  };
+  // const expenseData = {
+  //   description: "Rent",
+  //   amount: 109500,
+  //   createdAt: 100,
+  //   note: "last rent"
+  // };
 
-  const action = addExpense(expenseData);
+  const action = addExpense(expenses[2] /* expenseData */);
   expect(action).toEqual({
     type: "ADD_EXPENSE",
-    expense: {
+    expense: expenses[2] /* {
       ...expenseData,
       id: expect.any(String)
-    }
+    } */
   });
 });
 
-test("should setup add expense action object with default values", () => {
-  const defaultExpenseData = {
+// test("should setup add expense action object with default values", () => {
+//   const defaultExpenseData = {
+//     description: "",
+//     note: "",
+//     amount: 0,
+//     createdAt: 0
+//   };
+
+//   const action = addExpense();
+//   expect(action).toEqual({
+//     type: "ADD_EXPENSE",
+//     expense: {
+//       ...defaultExpenseData,
+//       id: expect.any(String)
+//     }
+//   });
+// });
+
+test("should add expense to database and store", (done) => {
+  const store = createMockStore({});
+  const expenseToAdd = {
+    description: "Rice",
+    note: "good food",
+    amount: 699,
+    createdAt: 0
+  };
+
+  // we have to tell jest that a function is asynchronous to force it to wait
+  store.dispatch(startAddExpense(expenseToAdd)).then(() => {
+    /* expect(1).toBe(2);
+    //try removing done to see it doesn't detect
+    done(); */
+
+    const actions = store.getActions();
+    expect(actions[0]).toEqual({
+      type: "ADD_EXPENSE",
+      expense: {
+        id: expect.any(String),
+        ...expenseToAdd
+      }
+    });
+
+    return get(child(ref(db), `expenses/${actions[0].expense.id}`)).then(
+      (snapshot) => {
+        if (snapshot.exists()) {
+          expect(snapshot.val()).toEqual(expenseToAdd);
+        } else {
+          console.log("No data available");
+        }
+        done();
+      }
+    );
+  });
+});
+
+test("should add expense with defaults to database and store", (done) => {
+  const store = createMockStore({});
+  const defaultExpenseToAdd = {
     description: "",
     note: "",
     amount: 0,
     createdAt: 0
   };
 
-  const action = addExpense();
-  expect(action).toEqual({
-    type: "ADD_EXPENSE",
-    expense: {
-      ...defaultExpenseData,
-      id: expect.any(String)
-    }
+  store.dispatch(startAddExpense({})).then(() => {
+    const actions = store.getActions();
+    expect(actions[0]).toEqual({
+      type: "ADD_EXPENSE",
+      expense: {
+        id: expect.any(String),
+        ...defaultExpenseToAdd
+      }
+    });
+
+    return get(child(ref(db), `expenses/${actions[0].expense.id}`)).then(
+      (snapshot) => {
+        if (snapshot.exists()) {
+          expect(snapshot.val()).toEqual(defaultExpenseToAdd);
+        } else {
+          console.log("No data available");
+        }
+        done();
+      }
+    );
   });
 });

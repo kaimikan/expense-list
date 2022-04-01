@@ -1,21 +1,61 @@
 import uuid from "uuid";
+import db from "../firebase/firebase";
+import {
+  getDatabase,
+  ref,
+  set,
+  update,
+  remove,
+  onValue,
+  off,
+  push,
+  onChildAdded,
+  onChildChanged,
+  onChildRemoved
+} from "firebase/database";
+
+// PRE ASYNCHRONOUS
+/* 
+-component calls action generator
+-action generator returns object
+-component distaptches object
+-redux store changes
+*/
+
+//POST ASYNCHRONOUS
+/* 
+-components calls action generator
+-action generator returns function
+-component dispatches function (?)
+-function runs (has the ability to dispatch other actions and do whatever it wants)
+*/
 
 // ADD_EXPENSE
-export const addExpense = ({
-  description = "",
-  note = "",
-  amount = 0,
-  createdAt = 0
-} = {}) => ({
+export const addExpense = (expense) => ({
   type: "ADD_EXPENSE",
-  expense: {
-    id: uuid(),
-    description,
-    note,
-    amount,
-    createdAt
-  }
+  expense
 });
+
+export const startAddExpense = (expenseData = {}) => {
+  // this syntax works because of redux thunk
+  return (dispatch) => {
+    const {
+      description = "",
+      note = "",
+      amount = 0,
+      createdAt = 0
+    } = expenseData;
+    const expense = { description, note, amount, createdAt };
+    return push(ref(db, "expenses"), expense).then((ref) => {
+      dispatch(
+        addExpense({
+          id: ref.key,
+          ...expense
+        })
+      );
+    });
+  };
+};
 
 // REMOVE_EXPENSE
 export const removeExpense = ({ expenseIDToRemove } = {}) => ({
