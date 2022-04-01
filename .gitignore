@@ -25,6 +25,9 @@ chrome-user-data
 *.swo
 .prettierrc.json
 public/dist/
+# database info should not be commited but I will keep it for the sake of clarity in the remote version
+#.env.development
+#.env.test
 
 packages/react-devtools-core/dist
 packages/react-devtools-extensions/chrome/build
