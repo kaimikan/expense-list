@@ -24,7 +24,13 @@ set(ref(db), {
     city: "Deventer",
     country: "Netherlands"
   }
-});
+})
+  .then(() => {
+    console.log("Data is saved");
+  })
+  .catch((e) => {
+    console.log("This failed", e);
+  });
 
 // better to use update if we are just changing an already existing field
 set(ref(db, "name"), "Kaloyan");
@@ -35,5 +41,6 @@ update(ref(db), updates);
 
 set(ref(db, "attributes/height"), "178cm");
 set(ref(db, "attributes/weight"), "90kg");
+// or set(ref(db, "attributes"), {height: '178cm', weight: '90kg'});
 
 console.log("made firebase data change request");
