@@ -3,6 +3,8 @@ import db from "../firebase/firebase";
 import {
   getDatabase,
   ref,
+  get,
+  child,
   set,
   update,
   remove,
@@ -69,3 +71,28 @@ export const editExpense = (id, updates) => ({
   id,
   updates
 });
+
+// SET_EXPENSES
+export const setExpenses = (expenses) => ({
+  type: "SET_EXPENSES",
+  expenses
+});
+
+//export const startSetExpenses;
+export const startSetExpenses = () => {
+  // this syntax works because of redux thunk
+  return (dispatch) => {
+    return get(child(ref(db), `expenses`)).then((dataSnapshot) => {
+      const expensesData = [];
+      dataSnapshot.forEach((childSnapshot) => {
+        const id = childSnapshot.key;
+        expensesData.push({
+          id,
+          ...childSnapshot.val()
+        });
+      });
+
+      return dispatch(setExpenses(expensesData));
+    });
+  };
+};
