@@ -7,7 +7,9 @@ import {
   editExpense,
   removeExpense,
   setExpenses,
-  startSetExpenses
+  startSetExpenses,
+  startRemoveExpense,
+  startEditExpense
 } from "../../actions/expenses";
 import expenses from "../fixtures/expenses";
 import db from "../../firebase/firebase";
@@ -32,6 +34,25 @@ test("should setup remove expense action object", () => {
   });
 });
 
+test("should remove expense from firebase", (done) => {
+  const store = createMockStore({});
+  const id = expenses[1].id;
+  store
+    .dispatch(startRemoveExpense({ expenseIDToRemove: id }))
+    .then(() => {
+      const actions = store.getActions();
+      expect(actions[0]).toEqual({
+        type: "REMOVE_EXPENSE",
+        expenseIDToRemove: id
+      });
+      return get(child(ref(db), `expenses/${id}`));
+    })
+    .then((snapshot) => {
+      expect(snapshot.val()).toBeFalsy();
+      done();
+    });
+});
+
 test("should setup edit expense action object", () => {
   const action = editExpense("123abc", { note: "new note value" });
   // toBe does not work properly because it compares with === which will never work for two separate objects even if they have the same info
@@ -40,6 +61,28 @@ test("should setup edit expense action object", () => {
     id: "123abc",
     updates: { note: "new note value" }
   });
+});
+
+test("should setup edit expense from firebase", (done) => {
+  const store = createMockStore({});
+  const expenseID = expenses[0].id;
+  const updates = { note: "sha la la la" };
+
+  store
+    .dispatch(startEditExpense(expenseID, updates))
+    .then(() => {
+      const actions = store.getActions();
+      expect(actions[0]).toEqual({
+        type: "EDIT_EXPENSE",
+        id: expenseID,
+        updates
+      });
+      return get(child(ref(db), `expenses/${expenseID}`));
+    })
+    .then((snapshot) => {
+      expect(snapshot.val().note).toBe(updates.note);
+      done();
+    });
 });
 
 // changed the 2 tests below after asynchronous chages to expense actions
