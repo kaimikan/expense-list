@@ -36,4 +36,6 @@ While following the course a build up of deprecated packages is making some of t
 
 - **Video #134 - Creating Seperate CSS Files** - tried Mini Css Extract Plugin as suggested from Q&A with no noticeable result. Webpack is updated to 4.1.0 -> Webpack-CLI -> building does not generate anything anymore, neither bundle.js nor the wanted styles.css file
 
+- **Videos #140-169 - Firebase** - the version of Firebase used in the tutorials was giving me some issues so I updated to latestm which works but causes a lot more trouble when trying to implement the functionalities since the info became outdated.
+
 - **Video #156 - Heroku Environmental variables** - was giving "ERROR in bundle.js from UglifyJs" and it got resolved only after removing the "-p" in "build:prod": "webpack -p --env production" inside package.json. Recording this in case something breaks in the future.
