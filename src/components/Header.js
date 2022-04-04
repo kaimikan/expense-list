@@ -6,7 +6,7 @@ import { startLogout } from "../actions/auth";
 export const Header = ({ startLogout }) => (
   <header>
     <h1>Expense List</h1>
-    <NavLink to="/dashboard" activeClassName="is-active" exact={true}>
+    <NavLink to="/dashboard" activeClassName="is-active">
       Dashboard
     </NavLink>
     &nbsp;

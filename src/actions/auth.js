@@ -1,24 +1,20 @@
 import uuid from "uuid";
 import {
   getAuth,
-  onAuthStateChanged,
   signInWithPopup,
   GoogleAuthProvider,
   signOut
 } from "firebase/auth";
 import "../firebase/firebase";
+import { history } from "../routers/AppRouter";
 
 const googleAuthProvider = new GoogleAuthProvider();
 
 const auth = getAuth();
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log("log in", user.uid);
-    const uid = user.uid;
-  } else {
-    console.log("log out");
-  }
+export const login = (uid) => ({
+  type: "LOG_IN",
+  uid
 });
 
 export const startLogin = () => {
@@ -37,6 +33,10 @@ export const startLogin = () => {
       });
   };
 };
+
+export const logout = () => ({
+  type: "LOG_OUT"
+});
 
 export const startLogout = () => {
   return () => {

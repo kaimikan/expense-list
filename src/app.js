@@ -4,12 +4,14 @@ import { Provider } from "react-redux";
 import AppRouter from "./routers/AppRouter";
 import configureStore from "./store/configureStore";
 import getVisibleExpenses from "./selectors/expenses";
-import { startSetExpenses, addExpense } from "./actions/expenses";
-import { setTextFilter } from "./actions/filters";
+import { startSetExpenses } from "./actions/expenses";
+import { login, logout } from "./actions/auth";
 import "normalize.css/normalize.css";
 import "./styles/styles.scss";
 import "react-dates/lib/css/_datepicker.css";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./firebase/firebase";
+import { history } from "./routers/AppRouter";
 
 const store = configureStore();
 
@@ -25,8 +27,33 @@ const jsx = (
   </Provider>
 );
 
+let hasRendered = false;
+const renderApp = () => {
+  if (!hasRendered) {
+    ReactDOM.render(jsx, document.getElementById("app"));
+    hasRendered = true;
+  }
+};
+
 ReactDOM.render(<p>Loading...</p>, document.getElementById("app"));
 
-store.dispatch(startSetExpenses()).then(() => {
-  ReactDOM.render(jsx, document.getElementById("app"));
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    store.dispatch(login(user.uid));
+    store.dispatch(startSetExpenses()).then(() => {
+      renderApp();
+      if (history.location.pathname === "/") {
+        history.push("/dashboard");
+      }
+    });
+    console.log("log in", user.uid);
+    const uid = user.uid;
+  } else {
+    store.dispatch(logout());
+    renderApp();
+    console.log("log out");
+    history.push("/");
+  }
 });
