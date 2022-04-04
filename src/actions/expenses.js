@@ -40,7 +40,8 @@ export const addExpense = (expense) => ({
 
 export const startAddExpense = (expenseData = {}) => {
   // this syntax works because of redux thunk
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
     const {
       description = "",
       note = "",
@@ -48,7 +49,7 @@ export const startAddExpense = (expenseData = {}) => {
       createdAt = 0
     } = expenseData;
     const expense = { description, note, amount, createdAt };
-    return push(ref(db, "expenses"), expense).then((ref) => {
+    return push(ref(db, `users/${uid}/expenses`), expense).then((ref) => {
       dispatch(
         addExpense({
           id: ref.key,
@@ -66,10 +67,13 @@ export const removeExpense = ({ expenseIDToRemove } = {}) => ({
 });
 
 export const startRemoveExpense = ({ expenseIDToRemove } = {}) => {
-  return (dispatch) => {
-    return remove(ref(db, `expenses/${expenseIDToRemove}`)).then(() => {
-      dispatch(removeExpense({ expenseIDToRemove }));
-    });
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    return remove(ref(db, `users/${uid}/expenses/${expenseIDToRemove}`)).then(
+      () => {
+        dispatch(removeExpense({ expenseIDToRemove }));
+      }
+    );
   };
 };
 
@@ -82,8 +86,9 @@ export const editExpense = (id, updates) => ({
 
 export const startEditExpense = (id, updates) => {
   const updatesHolder = {};
-  updatesHolder[`expenses/${id}`] = { ...updates };
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    updatesHolder[`users/${uid}/expenses/${id}`] = { ...updates };
     return update(ref(db), updatesHolder).then(() => {
       dispatch(editExpense(id, updates));
     });
@@ -99,8 +104,9 @@ export const setExpenses = (expenses) => ({
 //export const startSetExpenses;
 export const startSetExpenses = () => {
   // this syntax works because of redux thunk
-  return (dispatch) => {
-    return get(child(ref(db), `expenses`)).then((dataSnapshot) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    return get(child(ref(db), `users/${uid}/expenses`)).then((dataSnapshot) => {
       const expensesData = [];
       dataSnapshot.forEach((childSnapshot) => {
         const id = childSnapshot.key;
