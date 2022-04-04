@@ -1,7 +1,7 @@
-* {
+/* * {
   color: $easy-on-the-eyes-foreground;
   background: $easy-on-the-eyes-background;
-}
+} */
 
 html {
   /* 16px base * 62.5% = 10px base meaning that 1 rem = 10px */
@@ -9,8 +9,10 @@ html {
 }
 
 body {
+  color: $dark-grey;
   font-family: Helvetica, Arial, sans-serif;
   font-size: $m-size;
+  line-height: 1.6;
 }
 
 button {
