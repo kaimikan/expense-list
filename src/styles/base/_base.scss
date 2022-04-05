@@ -1,7 +1,9 @@
-/* * {
-  color: $easy-on-the-eyes-foreground;
-  background: $easy-on-the-eyes-background;
-} */
+* {
+  /* color: $easy-on-the-eyes-foreground;
+  background: $easy-on-the-eyes-background; */
+  /* border-box is useful for matching height and width without caring about padding/margin */
+  box-sizing: border-box;
+}
 
 html {
   /* 16px base * 62.5% = 10px base meaning that 1 rem = 10px */
